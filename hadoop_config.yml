@@ -1,0 +1,117 @@
+- hosts: Name_Node
+  vars_prompt:
+          - name: Name_Node_Directory
+            private: no
+            prompt: "Enter Name Node Directory Path:"
+          - name: Name_Node_IP
+            private: no
+            prompt: "Enter Name Node IP Address for Name Node Configuration: "
+
+  tasks:
+          - name: Creating Software Directory
+            file:
+                  path: /root/ARTH_HADOOP_SOFTWARES
+                  state: directory
+                  force: yes
+            become: yes
+          - name: Copying Hadoopv1 Software
+            copy:
+                  src: "/root/ARTH_SOFTWARES/HADOOP_SOFTWARES/hadoop-1.2.1-1.x86_64.rpm"
+                  dest: "/root/ARTH_HADOOP_SOFTWARES/"
+            become: yes
+          - name: Copying JDK Software
+            copy:
+                  src: "/root/ARTH_SOFTWARES/HADOOP_SOFTWARES/jdk-8u171-linux-x64.rpm"
+                  dest: "/root/ARTH_HADOOP_SOFTWARES/"
+            become: yes
+          - name: Installing JDK Softwares
+            command: "rpm -ivh /root/ARTH_HADOOP_SOFTWARES/jdk-8u171-linux-x64.rpm --force"
+            become: yes
+          - name: Installing Hadoop Softwares
+            command: "rpm -ivh /root/ARTH_HADOOP_SOFTWARES/hadoop-1.2.1-1.x86_64.rpm  --force"
+            become: yes
+          - name: Clearing Name Node Directory (if already exists)
+            file:
+                  state: absent
+                  path: "{{ Name_Node_Directory }}"
+            become: yes
+          - name: Creating Name Node Directory
+            file:
+                  state: directory
+                  path: "{{ Name_Node_Directory }}"
+            become: yes
+          - name: Configuring hdfs-site.xml
+            template:
+                  src: "/root/ARTH_ANSIBLE/HADOOP_CONFIG/Name_Node_Files/hdfs-site.xml"
+                  dest: "/etc/hadoop/"
+                  force: yes
+            become: yes
+          - name: Configuring core-site.xml
+            template:
+                  src: "/root/ARTH_ANSIBLE/HADOOP_CONFIG/Name_Node_Files/core-site.xml"
+                  dest: "/etc/hadoop/"
+                  force: yes
+            become: yes
+          - command: "hadoop-daemon.sh stop namenode"
+            become: yes
+          - name: formatting Name Node Directory
+            command: "hadoop namenode -format -force"
+            become: yes
+          - name: Starting Hadoop Name Node
+            command: "hadoop-daemon.sh start namenode"
+            become: yes
+- hosts: Data_Node
+  vars_prompt:
+          - name: Data_Node_Directory
+            private: no
+            prompt: "Enter Data Node Directory Path:"
+          - name: Name_Node_IP
+            private: no
+            prompt: "Enter Name Node IP Address for Data Node Configuration: "
+  tasks:
+          - name: Creating Software Directory
+            file:
+                  path: /root/ARTH_HADOOP_SOFTWARES
+                  state: directory
+            become: yes
+          - name: Copying Hadoopv1 Software
+            copy:
+                  src: "/root/ARTH_SOFTWARES/HADOOP_SOFTWARES/hadoop-1.2.1-1.x86_64.rpm"
+                  dest: "/root/ARTH_HADOOP_SOFTWARES/"
+            become: yes
+          - name: Copying JDK Software
+            copy:
+                  src: "/root/ARTH_SOFTWARES/HADOOP_SOFTWARES/jdk-8u171-linux-x64.rpm"
+                  dest: "/root/ARTH_HADOOP_SOFTWARES/"
+            become: yes
+          - name: Installing JDK Softwares
+            command: "rpm -ivh /root/ARTH_HADOOP_SOFTWARES/jdk-8u171-linux-x64.rpm --force"
+            become: yes
+          - name: Installing Hadoop Softwares
+            command: "rpm -ivh /root/ARTH_HADOOP_SOFTWARES/hadoop-1.2.1-1.x86_64.rpm  --force"
+            become: yes
+          - name: Clearing Data Node Directory
+            file:
+                  state: absent
+                  path: "{{ Data_Node_Directory }}"
+            become: yes
+          - name: Creating Data Node Directory
+            file:
+                  state: directory
+                  path: "{{ Data_Node_Directory }}"
+            become: yes
+          - name: Configuring hdfs-site.xml
+            template:
+                  src: "/root/ARTH_ANSIBLE/HADOOP_CONFIG/Data_Node_Files/hdfs-site.xml"
+                  dest: "/etc/hadoop/"
+                  force: yes
+            become: yes
+          - name: Configuring core-site.xml
+            template:
+                  src: "/root/ARTH_ANSIBLE/HADOOP_CONFIG/Data_Node_Files/core-site.xml"
+                  dest: "/etc/hadoop/"
+                  force: yes
+            become: yes
+          - name: Starting Hadoop Name Node
+            command: "hadoop-daemon.sh start datanode"
+            become: yes

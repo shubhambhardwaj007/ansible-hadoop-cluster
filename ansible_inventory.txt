@@ -1,0 +1,6 @@
+[Name_Node]
+13.233.112.127 ansible_user=ec2-user ansible_ssh_private_key_file=/root/ARTH_ANSIBLE/HADOOP_CONFIG/myfirstkeypair.pem ansible_connection=ssh
+
+[Data_Node]
+15.206.170.11 ansible_user=ec2-user ansible_ssh_private_key_file=/root/ARTH_ANSIBLE/HADOOP_CONFIG/myfirstkeypair.pem ansible_connection=ssh
+
